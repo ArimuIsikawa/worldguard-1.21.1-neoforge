@@ -110,6 +110,8 @@ public final class ProtectionEvents {
 
     @SubscribeEvent
     public void breakBlock(BlockEvent.BreakEvent event) {
+        if (event.getLevel() instanceof ServerLevel level && active() && event.getState().getBlock() instanceof BedBlock
+                && WorldGuardMod.service().config().bool(level.dimension().location().toString(), "regions.allow-bed-break-for-everyone", true)) return;
         if(event.getLevel() instanceof ServerLevel level && active() && !WorldGuardMod.service().buildPermission(level,event.getPlayer(),"block",BuiltInRegistries.BLOCK.getKey(event.getState().getBlock()).getPath(),"remove")) {
             event.setCanceled(true); return;
         }

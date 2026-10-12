@@ -3,6 +3,7 @@ operator-level: 2
 regions:
   enable: true
   disable-bypass-by-default: false
+  allow-bed-break-for-everyone: true
   max-claim-volume: 30000
   max-region-count-per-player:
     default: 7

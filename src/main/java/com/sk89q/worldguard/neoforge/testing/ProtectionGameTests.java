@@ -116,6 +116,60 @@ public final class ProtectionGameTests {
     }
 
     @GameTest(template = "empty", timeoutTicks = 100)
+    public static void outsidersCanBreakEveryBedColorButNotOtherProtectedBlocks(GameTestHelper helper) throws Exception {
+        try (Fixture fixture = new Fixture(helper, "bed_break");
+             ChestConfiguration config = new ChestConfiguration(fixture.service, fixture.dimension)) {
+            ServerPlayer player = fixture.survivalPlayer(2, 2, 2);
+            check(!player.isCreative() && !player.hasPermissions(2) && !fixture.service.bypass(player), "Bed breaking must work for a real survival nonoperator with no bypass");
+            Region region = fixture.addRegion(fixture.pos(2, 1, 2), fixture.pos(6, 5, 6));
+            region.owners().uuids().add(UUID.randomUUID());
+            region.flags().put("build", "deny"); region.flags().put("block-break", "deny"); fixture.save();
+            BlockPos foot = fixture.pos(3, 2, 3), head = foot.east(), stone = fixture.pos(5, 2, 5);
+            fixture.level.setBlock(foot.below(), Blocks.STONE.defaultBlockState(), 2);
+            fixture.level.setBlock(head.below(), Blocks.STONE.defaultBlockState(), 2);
+            fixture.level.setBlock(stone, Blocks.STONE.defaultBlockState(), 2);
+            List<net.minecraft.world.level.block.BedBlock> beds = net.minecraft.core.registries.BuiltInRegistries.BLOCK.stream()
+                    .filter(block -> block instanceof net.minecraft.world.level.block.BedBlock)
+                    .map(block -> (net.minecraft.world.level.block.BedBlock) block).toList();
+            check(beds.size() >= 16, "The native registry must include every vanilla bed color");
+            int index = 0;
+            for (var bed : beds) {
+                var state = bed.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.EAST);
+                fixture.level.setBlock(foot, state.setValue(net.minecraft.world.level.block.BedBlock.PART,
+                        net.minecraft.world.level.block.state.properties.BedPart.FOOT), 2);
+                fixture.level.setBlock(head, state.setValue(net.minecraft.world.level.block.BedBlock.PART,
+                        net.minecraft.world.level.block.state.properties.BedPart.HEAD), 2);
+                check(fixture.level.getBlockState(foot).is(bed) && fixture.level.getBlockState(head).is(bed), "Both bed halves must exist before breaking");
+                check(player.gameMode.destroyBlock(index++ % 2 == 0 ? foot : head), "An outsider must be able to break either half of " + bed);
+                check(fixture.level.getBlockState(foot).isAir() && fixture.level.getBlockState(head).isAir(),
+                        "Breaking either half must remove the complete bed through vanilla neighbor updates");
+                var drops = fixture.level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                        new net.minecraft.world.phys.AABB(foot).inflate(2)).stream().filter(item -> item.getItem().is(bed.asItem())).toList();
+                check(drops.stream().mapToInt(item -> item.getItem().getCount()).sum() == 1, "Breaking a bed must produce exactly one bed item");
+                drops.forEach(Entity::discard);
+            }
+            check(!player.gameMode.destroyBlock(stone) && fixture.level.getBlockState(stone).is(Blocks.STONE),
+                    "The bed exception must preserve the ordinary block-break protection");
+            config.set("build-permission-nodes.enable", true);
+            var state = Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.EAST);
+            fixture.level.setBlock(foot, state.setValue(net.minecraft.world.level.block.BedBlock.PART,
+                    net.minecraft.world.level.block.state.properties.BedPart.FOOT), 2);
+            fixture.level.setBlock(head, state.setValue(net.minecraft.world.level.block.BedBlock.PART,
+                    net.minecraft.world.level.block.state.properties.BedPart.HEAD), 2);
+            check(player.gameMode.destroyBlock(head), "The explicit bed exception must not require an additional build permission node");
+            fixture.level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(foot).inflate(2)).forEach(Entity::discard);
+            config.set("regions.allow-bed-break-for-everyone", false);
+            fixture.level.setBlock(foot, state.setValue(net.minecraft.world.level.block.BedBlock.PART,
+                    net.minecraft.world.level.block.state.properties.BedPart.FOOT), 2);
+            fixture.level.setBlock(head, state.setValue(net.minecraft.world.level.block.BedBlock.PART,
+                    net.minecraft.world.level.block.state.properties.BedPart.HEAD), 2);
+            check(!player.gameMode.destroyBlock(foot) && fixture.level.getBlockState(foot).is(Blocks.RED_BED)
+                            && fixture.level.getBlockState(head).is(Blocks.RED_BED), "Disabling the exception must restore bed protection");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
     public static void projectileOwnerCannotBypassPvp(GameTestHelper helper) throws Exception {
         try (Fixture fixture = new Fixture(helper, "pvp")) {
             ServerPlayer shooter = fixture.player(1, 2, 1);
@@ -1199,6 +1253,21 @@ public final class ProtectionGameTests {
             if (service.bypass(player)) {
                 service.toggleBypass(player);
             }
+            return player;
+        }
+
+        private ServerPlayer survivalPlayer(int x, int y, int z) {
+            var cookie = net.minecraft.server.network.CommonListenerCookie.createInitial(
+                    new com.mojang.authlib.GameProfile(UUID.randomUUID(), "bed-test-player"), false);
+            ServerPlayer player = new ServerPlayer(level.getServer(), level, cookie.gameProfile(), cookie.clientInformation());
+            var connection = new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND);
+            new io.netty.channel.embedded.EmbeddedChannel(connection);
+            level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
+            players.add(player);
+            BlockPos position = pos(x, y, z);
+            player.setPos(position.getX() + .5, position.getY(), position.getZ() + .5);
+            player.gameMode.changeGameModeForPlayer(GameType.SURVIVAL);
+            if (service.bypass(player)) service.toggleBypass(player);
             return player;
         }
 
