@@ -1,0 +1,32 @@
+{
+  "settings": {
+    "blacklist.logging.file.open-files": "Файлы открываются и закрываются при каждой записи; одновременно удерживается один файловый дескриптор, кеш открытых журналов Bukkit не используется.",
+    "protection.remove-infinite-stacks": "Отрицательное количество означает пустой ItemStack в Minecraft 1.21.1; старые бесконечные стеки не существуют.",
+    "regions.max-region-count-per-player.": "Это префикс динамических ключей групп, а не отдельная настройка. Реализован через карту regions.max-region-count-per-player и RegionGroupEvent.",
+    "sniffer-egg.disable-creature-trampling": "Яйцо нюхача в Minecraft 1.21.1 не разрушается от наступания существ.",
+    "sniffer-egg.disable-player-trampling": "Яйцо нюхача в Minecraft 1.21.1 не разрушается от наступания игроков."
+  },
+  "listeners": {
+    "BlacklistListener.java": "rules/BlacklistService.java, rules/WorldRulesEvents.java и mixin-хуки предметов: blacklist и действия журналирования/уведомления/наказания.",
+    "BlockedPotionsListener.java": "rules/WorldRulesHooks.java, rules/WorldRulesEvents.java, SplashPotionMixin и LingeringPotionMixin: предметы, эффекты, override и reliable blocking.",
+    "BuildPermissionListener.java": "ProtectionService.buildPermission, protection/ProtectionEvents.java и RegionPermissionEvent: оба порядка узлов прав и отдельные виды действий.",
+    "ChestProtectionListener.java": "rules/SignChestProtection.java, SignChestMixin, HopperMixin, ContainerDropMixin: таблички, контейнеры, обе половины сундука и автоматизация.",
+    "DebuggingListener.java": "admin/DebugCommands.java: симуляция событий NeoForge и конечный результат. Приписывание отмены Bukkit-плагинам отсутствует на этой платформе.",
+    "EventAbstractionListener.java": "protection/ProtectionEvents.java, ProtectionHooks.java и mixin/: нативные события и причины изменений; слоя Bukkit-событий нет.",
+    "InvincibilityListener.java": "rules/WorldRulesEvents.java, protection/ProtectionEvents.java и ProtectionService: god, урон, воздух и защита от эффектов.",
+    "PlayerModesListener.java": "sessions/SessionEvents.java и RegionGroupEvent/RegionPermissionEvent: автоматические god/no-drowning.",
+    "PlayerMoveListener.java": "sessions/PlayerSessions.java и sessions/mixin/: движения, порталы, телепортации и восстановления режимов.",
+    "RegionFlagsListener.java": "sessions/SessionEvents.java, PlayerSessions.java и PacketListenerMixin/ChatRecipientMixin: сообщения, чат, команды, вход и выход.",
+    "RegionProtectionListener.java": "protection/ProtectionEvents.java и mixin/: проверки блоков, предметов, сущностей, взрывов, механизмов и членства.",
+    "WorldGuardBlockListener.java": "protection/ProtectionEvents.java, ProtectionHooks.java, rules/WorldRulesHooks.java и mixin/: глобальные и региональные изменения блоков.",
+    "WorldGuardCommandBookListener.java": "Двоичная интеграция с CommandBook является Bukkit-интеграцией. Доступны /rg info, /wg report и публичный нативный API для модов.",
+    "WorldGuardEntityListener.java": "protection/ProtectionEvents.java, rules/WorldRulesEvents.java и mixin/: спавн, урон, грифинг, опыт, порталы, сущности.",
+    "WorldGuardHangingListener.java": "DecorationDamageMixin, HangingPhysicsMixin, EntityPlacementMixin и ProtectionEvents: рамки, картины и опоры.",
+    "WorldGuardPlayerListener.java": "protection/ProtectionEvents.java, rules/WorldRulesEvents.java, SessionEvents.java и mixin/: игроки, предметы, сон, безопасность, вход.",
+    "WorldGuardServerListener.java": "WorldGuardMod.java и события API: жизненный цикл NeoForge и регистрация нативных расширений; загрузки Bukkit-плагинов нет.",
+    "WorldGuardVehicleListener.java": "BoatPlacementMixin, DecorationDamageMixin и ProtectionEvents: размещение, посадка и разрушение транспорта.",
+    "WorldGuardWeatherListener.java": "WorldRulesEvents.java, WeatherMixin и LightningMixin: погода, молния и превращения существ.",
+    "WorldGuardWorldListener.java": "WorldGuardMod.java, SessionEvents.java, WorldRulesEvents.java: загрузка хранилищ, погода и halt-activity при появлении сущностей.",
+    "WorldRulesListener.java": "rules/WorldRulesHooks.java и mixin/: физика, жидкости, губки, рост и естественные изменения."
+  }
+}

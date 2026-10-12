@@ -1,0 +1,18 @@
+WorldGuard for NeoForge 1.21.1 (unofficial port)
+
+Based on the behavior and data format of EngineHub WorldGuard 7.
+WorldGuard Copyright (C) sk89q and WorldGuard contributors.
+https://github.com/EngineHub/WorldGuard
+WorldGuard is licensed under the GNU Lesser General Public License v3 or later.
+This project is not affiliated with or endorsed by EngineHub.
+
+The jar embeds SnakeYAML 2.3, Copyright SnakeYAML contributors,
+under Apache License 2.0. Its upstream license is included inside the embedded jar.
+
+The jar also embeds SQLite JDBC 3.53.4.0 by Xerial (Apache License 2.0)
+and MariaDB Connector/J 3.5.10 (LGPL-2.1-or-later).
+SQLite's native engine is in the public domain. Embedded dependency jars
+retain their upstream license, copyright notices and native library notices.
+
+Original decompiled plugin files in need_migrate are reference materials,
+not build inputs and not distributed inside this mod jar.

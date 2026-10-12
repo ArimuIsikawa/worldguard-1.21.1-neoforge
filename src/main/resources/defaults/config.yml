@@ -1,0 +1,32 @@
+# WorldGuard for NeoForge 1.21.1. /wg reload applies changes.
+operator-level: 2
+regions:
+  enable: true
+  disable-bypass-by-default: false
+  max-claim-volume: 30000
+  max-region-count-per-player:
+    default: 7
+  protect-against-liquid-flow: true
+  high-frequency-flags: true
+  uuid-migration:
+    perform-on-next-start: true
+    keep-names-that-lack-uuids: true
+  sql:
+    use: false
+    dsn: jdbc:mysql://localhost/worldguard
+    username: worldguard
+    password: ''
+    table-prefix: ''
+  location-flags-only-inside-regions: false
+migration:
+  # One-time import only when the target regions.yml does not exist.
+  auto-import: true
+  worlds:
+    world: minecraft:overworld
+    world_nether: minecraft:the_nether
+    world_the_end: minecraft:the_end
+blacklist:
+  use-as-whitelist: false
+  logging:
+    console:
+      enable: true

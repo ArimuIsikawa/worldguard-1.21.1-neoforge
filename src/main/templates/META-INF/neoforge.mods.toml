@@ -1,0 +1,43 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="WorldGuard contributors; NeoForge port"
+description='''
+Server-side region protection for NeoForge 1.21.1, with WorldGuard YAML migration.
+Unofficial port; not an EngineHub release.
+'''
+
+[[mixins]]
+config="worldguard.mixins.json"
+
+[[mixins]]
+config="worldguard-sessions.mixins.json"
+
+[[mixins]]
+config="worldguard-rules.mixins.json"
+
+[[dependencies.${mod_id}]]
+modId="neoforge"
+type="required"
+versionRange="[${neo_version},)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="worldedit"
+type="optional"
+versionRange="[7.3.8,)"
+ordering="AFTER"
+side="SERVER"
